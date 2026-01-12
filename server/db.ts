@@ -1,11 +1,19 @@
-import { eq } from "drizzle-orm";
+import { eq, desc, like, and } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users } from "../drizzle/schema";
+import { 
+  InsertUser, 
+  users, 
+  appointments, 
+  InsertAppointment,
+  blogPosts,
+  InsertBlogPost,
+  successCases,
+  InsertSuccessCase
+} from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
 
-// Lazily create the drizzle instance so local tooling can run without a DB.
 export async function getDb() {
   if (!_db && process.env.DATABASE_URL) {
     try {
@@ -89,4 +97,112 @@ export async function getUserByOpenId(openId: string) {
   return result.length > 0 ? result[0] : undefined;
 }
 
-// TODO: add feature queries here as your schema grows.
+// Appointment queries
+export async function createAppointment(data: InsertAppointment) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const result = await db.insert(appointments).values(data);
+  return result;
+}
+
+export async function getAppointments() {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  return await db.select().from(appointments).orderBy(desc(appointments.createdAt));
+}
+
+// Blog post queries
+export async function createBlogPost(data: InsertBlogPost) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const result = await db.insert(blogPosts).values(data);
+  return result;
+}
+
+export async function updateBlogPost(id: number, data: Partial<InsertBlogPost>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  return await db.update(blogPosts).set(data).where(eq(blogPosts.id, id));
+}
+
+export async function deleteBlogPost(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  return await db.delete(blogPosts).where(eq(blogPosts.id, id));
+}
+
+export async function getBlogPosts(publishedOnly = false) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const conditions = publishedOnly ? eq(blogPosts.published, true) : undefined;
+  return await db.select().from(blogPosts)
+    .where(conditions)
+    .orderBy(desc(blogPosts.createdAt));
+}
+
+export async function getBlogPostBySlug(slug: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const result = await db.select().from(blogPosts).where(eq(blogPosts.slug, slug)).limit(1);
+  return result.length > 0 ? result[0] : null;
+}
+
+export async function searchBlogPosts(query: string, category?: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const conditions = [];
+  conditions.push(eq(blogPosts.published, true));
+  
+  if (query) {
+    conditions.push(like(blogPosts.title, `%${query}%`));
+  }
+  
+  if (category) {
+    conditions.push(eq(blogPosts.category, category));
+  }
+  
+  return await db.select().from(blogPosts)
+    .where(and(...conditions))
+    .orderBy(desc(blogPosts.createdAt));
+}
+
+// Success case queries
+export async function createSuccessCase(data: InsertSuccessCase) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const result = await db.insert(successCases).values(data);
+  return result;
+}
+
+export async function updateSuccessCase(id: number, data: Partial<InsertSuccessCase>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  return await db.update(successCases).set(data).where(eq(successCases.id, id));
+}
+
+export async function deleteSuccessCase(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  return await db.delete(successCases).where(eq(successCases.id, id));
+}
+
+export async function getSuccessCases(publishedOnly = false) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const conditions = publishedOnly ? eq(successCases.published, true) : undefined;
+  return await db.select().from(successCases)
+    .where(conditions)
+    .orderBy(desc(successCases.createdAt));
+}
