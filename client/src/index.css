@@ -118,11 +118,7 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground font-sans;
-    font-family: 'Roboto', sans-serif;
-  }
-  h1, h2, h3, h4, h5, h6 {
-    font-family: 'Cormorant Garamond', serif;
+    @apply bg-background text-foreground;
   }
   button:not(:disabled),
   [role="button"]:not([aria-disabled="true"]),
@@ -134,14 +130,6 @@
   input[type="checkbox"]:not(:disabled),
   input[type="radio"]:not(:disabled) {
     @apply cursor-pointer;
-  }
-  /* Title font styling */
-  .font-title {
-    font-family: 'Cormorant Garamond', serif;
-  }
-  /* Body font styling */
-  .font-body {
-    font-family: 'Roboto', sans-serif;
   }
 }
 
