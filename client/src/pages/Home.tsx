@@ -76,15 +76,12 @@ export default function Home() {
               <Link href="/about">
                 <span className="text-foreground hover:text-primary transition-colors font-medium cursor-pointer">{t('nav.about')}</span>
               </Link>
-              <Button
-                variant="outline"
-                size="sm"
+              <button
                 onClick={() => setLanguage(language === 'en' ? 'zh' : 'en')}
-                className="flex items-center space-x-1"
+                className="text-foreground hover:text-primary transition-colors font-medium cursor-pointer"
               >
-                <Globe className="h-4 w-4" />
-                <span>{language === 'en' ? '中文' : 'EN'}</span>
-              </Button>
+                {language === 'en' ? '中文' : 'EN'}
+              </button>
               <Link href="/contact">
                 <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
                   {t('nav.contact')}
