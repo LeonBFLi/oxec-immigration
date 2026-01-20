@@ -83,7 +83,7 @@ export default function Home() {
                 {language === 'en' ? '中文' : 'EN'}
               </button>
               <Link href="/contact">
-                <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
+                <Button className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-none">
                   {t('nav.contact')}
                 </Button>
               </Link>
@@ -122,7 +122,7 @@ export default function Home() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 pt-4">
                 <Link href="/booking">
-                  <Button asChild size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 text-lg px-8">
+                  <Button asChild size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 text-lg px-8 rounded-none">
                     <span>
                       {t('hero.book_consultation')}
                       <ArrowRight className="ml-2 h-5 w-5" />
@@ -130,7 +130,7 @@ export default function Home() {
                   </Button>
                 </Link>
                 <Link href="/success-cases">
-                  <Button asChild size="lg" variant="outline" className="border-2 border-primary text-primary hover:bg-primary/10 text-lg px-8">
+                  <Button asChild size="lg" variant="outline" className="border-2 border-primary text-primary hover:bg-primary/10 text-lg px-8 rounded-none">
                     <span>{t('hero.success_cases')}</span>
                   </Button>
                 </Link>
