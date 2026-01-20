@@ -113,7 +113,7 @@ export default function Home() {
               <div className="inline-block px-4 py-2 bg-accent/10 text-accent rounded-full text-sm font-semibold">
                 {t('hero.subtitle')}
               </div>
-              <h1 className="text-4xl lg:text-6xl font-bold text-foreground leading-tight">
+              <h1 className="text-4xl lg:text-6xl font-bold text-foreground leading-tight" style={{ fontFamily: 'Cormorant Garamond, serif', fontWeight: 700 }}>
                 {t('hero.title_part1')}
                 <span className="text-primary block mt-2">{t('hero.title_part2')}</span>
               </h1>
