@@ -37,12 +37,12 @@ jobs:
           password: ${{ secrets.SSH_PASSWORD }}
           script: |
             set -e
-            docker stop oxce || true
-            docker rm -f oxce || true
+            docker stop oxec-immigration || true
+            docker rm -f oxec-immigration || true
             docker rmi -f ${{ secrets.DOCKERHUB_USERNAME }}/oxec-immigration:latest || true
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/oxec-immigration:latest
             docker run -itd \
-              --name oxce \
+              --name oxec-immigration \
               -p 80:80 \
               -e NODE_ENV=production \
               -e PORT=80 \
