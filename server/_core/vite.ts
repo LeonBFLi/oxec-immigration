@@ -5,8 +5,13 @@ import { nanoid } from "nanoid";
 import path from "path";
 
 export async function setupVite(app: Express, server: Server) {
+  const viteConfigPath = path.resolve(
+    import.meta.dirname,
+    "../..",
+    "vite.config.ts"
+  );
   const [{ createServer: createViteServer }, { default: viteConfig }] =
-    await Promise.all([import("vite"), import("../../vite.config")]);
+    await Promise.all([import("vite"), import(viteConfigPath)]);
   const serverOptions = {
     middlewareMode: true,
     hmr: { server },
