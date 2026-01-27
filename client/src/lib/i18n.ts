@@ -124,7 +124,7 @@ export const translations: Record<Language, Record<string, string>> = {
 
     // Hero Section
     'hero.subtitle': '专业移民咨询服务',
-    'hero.title_part1': '您值得信赖的---',
+    'hero.title_part1': '您最值得信赖的',
     'hero.title_part2': '加拿大移民合作伙伴',
     'hero.description': 'OXEC移民服务有限公司提供全面的移民咨询服务，拥有专家指导、个性化策略和帮助客户实现加拿大梦想的成功记录。',
     'hero.book_consultation': '预约咨询',
