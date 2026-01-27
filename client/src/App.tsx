@@ -11,6 +11,7 @@ import Calculator from "./pages/Calculator";
 import Blog from "./pages/Blog";
 import SuccessCases from "./pages/SuccessCases";
 import Admin from "./pages/Admin";
+import BlogEditor from "./pages/BlogEditor";
 
 function Router() {
   return (
@@ -21,6 +22,7 @@ function Router() {
       <Route path="/blog" component={Blog} />
       <Route path="/success-cases" component={SuccessCases} />
       <Route path="/admin" component={Admin} />
+      <Route path="/blog/editor" component={BlogEditor} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>
