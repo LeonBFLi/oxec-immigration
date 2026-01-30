@@ -92,7 +92,7 @@ export default function Home() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-r from-white to-primary/5 py-20 lg:py-32" style={{paddingTop: '50px', paddingBottom: '50px'}}>
+      <section className="relative bg-gradient-to-r from-white to-primary/5 py-20 lg:py-32" style={{paddingTop: '50px', paddingBottom: '50px', borderColor: '#00437f', backgroundColor: '#00437f'}}>
         <div className="container">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left: Professional Image */}
@@ -101,17 +101,17 @@ export default function Home() {
                 <img 
                   src="/hero-canadian.jpg" 
                   alt="Canadian Immigration - Flag and Parliament" 
-                  className="relative rounded-2xl shadow-2xl w-full h-auto object-cover"
+                  className="relative rounded-2xl shadow-2xl w-full h-auto object-cover" style={{borderRadius: '0px'}}
                 />
               </div>
             </div>
 
             {/* Right: Hero Content */}
             <div className="order-1 lg:order-2 space-y-6">
-              <div className="inline-block px-4 py-2 bg-accent/10 text-accent rounded-full text-sm font-semibold">
+              <div className="inline-block px-4 py-2 bg-accent/10 text-accent rounded-full text-sm font-semibold" style={{color: '#ffffff'}}>
                 {t('hero.subtitle')}
               </div>
-              <h1 className="text-4xl lg:text-6xl font-bold text-foreground leading-tight" style={{ fontFamily: '阿里巴巴普惠体, Cormorant Garamond, serif', fontWeight: 700 }}>
+              <h1 className="text-4xl lg:text-6xl font-bold text-foreground leading-tight" style={{ fontFamily: '阿里巴巴普惠体, Cormorant Garamond, serif', fontWeight: 700, color: '#ffffff' }}>
                 {t('hero.title_part1')}
                 <span className="text-primary block mt-2">{t('hero.title_part2')}</span>
               </h1>

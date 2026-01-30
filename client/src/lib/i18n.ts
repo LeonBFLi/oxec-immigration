@@ -12,9 +12,9 @@ export const translations: Record<Language, Record<string, string>> = {
     'nav.book_consultation': 'Book Consultation',
 
     // Hero Section
-    'hero.subtitle': 'Professional Immigration Services',
-    'hero.title_part1': 'Your Trusted Partner for',
-    'hero.title_part2': 'Canadian Immigration',
+    'hero.subtitle': 'We are OXEC Immigration Services',
+    'hero.title_part1': 'Professional, Leading, and Trustworthy',
+    'hero.title_part2': 'Canadian Immigration Partner',
     'hero.description': 'OXEC Immigration Services Ltd. provides comprehensive immigration consulting services with expert guidance, personalized strategies, and a proven track record of success in helping clients achieve their Canadian dreams.',
     'hero.book_consultation': 'Book Consultation',
     'hero.success_cases': 'Success Cases',
@@ -116,7 +116,7 @@ export const translations: Record<Language, Record<string, string>> = {
     'admin.published': 'Published',
     'admin.draft': 'Draft',
   },
-  zh: {
+    zh: {
     // Navigation
     'nav.home': '首页',
     'nav.services': '服务',
@@ -127,11 +127,9 @@ export const translations: Record<Language, Record<string, string>> = {
     'nav.book_consultation': '预约咨询',
 
     // Hero Section
-    'hero.subtitle': '专业移民咨询服务',
-    'hero.title_part1': '您值得信赖的',
+    'hero.subtitle': '我们是傲赛（OXEC）移民事务所',
+    'hero.title_part1': '专业、领先、值得信赖的',
     'hero.title_part2': '加拿大移民合作伙伴',
-    'hero.description': 'OXEC移民服务有限公司提供全面的移民咨询服务，拥有专家指导、个性化策略和帮助客户实现加拿大梦想的成功记录。',
-    'hero.book_consultation': '预约咨询',
     'hero.success_cases': '成功案例',
     'hero.calculator': '移民算分工具',
 
