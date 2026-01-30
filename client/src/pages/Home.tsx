@@ -100,8 +100,8 @@ export default function Home() {
               <div className="relative">
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-accent/20 rounded-2xl transform rotate-3"></div>
                 <img 
-                  src="/hero-professional.jpg" 
-                  alt="Professional Immigration Consultant" 
+                  src="/hero-canadian.jpg" 
+                  alt="Canadian Immigration - Flag and Parliament" 
                   className="relative rounded-2xl shadow-2xl w-full h-auto object-cover"
                 />
               </div>
