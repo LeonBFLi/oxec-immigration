@@ -10,7 +10,7 @@ interface LanguageContextType {
 export const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export const LanguageProvider: FC<{ children: ReactNode }> = ({ children }) => {
-  const [language, setLanguageState] = useState<Language>('en');
+  const [language, setLanguageState] = useState<Language>('zh');
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
@@ -19,6 +19,9 @@ export const LanguageProvider: FC<{ children: ReactNode }> = ({ children }) => {
       const savedLanguage = localStorage.getItem('language') as Language | null;
       if (savedLanguage === 'en' || savedLanguage === 'zh') {
         setLanguageState(savedLanguage);
+      } else {
+        // Default to Chinese if no saved preference
+        setLanguageState('zh');
       }
     }
     setIsLoaded(true);
