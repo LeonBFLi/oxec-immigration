@@ -50,38 +50,42 @@ export default function Home() {
       {/* Navigation */}
       <nav className="bg-white border-b border-border sticky top-0 z-50">
         <div className="container">
-          <div className="flex items-center justify-between h-20">
-            <Link href="/">
+          <div className="flex items-center justify-between h-20 flex-1">
+            <Link href="/" className="flex-shrink-0">
               <img src="/oxec-logo.png" alt="OXEC Immigration Services Ltd." className="h-16 cursor-pointer" />
             </Link>
             
-            <div className="hidden md:flex items-center space-x-6" style={{paddingLeft: '120px'}}>
-              <Link href="/">
-                <span className="text-foreground hover:text-primary transition-colors font-medium cursor-pointer" style={{marginRight: '240px'}}>{t('nav.home')}</span>
-              </Link>
-              <Link href="/services">
-                <span className="text-foreground hover:text-primary transition-colors font-medium cursor-pointer">{t('nav.services')}</span>
-              </Link>
-              <Link href="/success-cases">
-                <span className="text-foreground hover:text-primary transition-colors font-medium cursor-pointer">{t('nav.success_cases')}</span>
-              </Link>
-              <Link href="/blog">
-                <span className="text-foreground hover:text-primary transition-colors font-medium cursor-pointer">{t('nav.blog')}</span>
-              </Link>
-              <Link href="/about">
-                <span className="text-foreground hover:text-primary transition-colors font-medium cursor-pointer">{t('nav.about')}</span>
-              </Link>
-              <button
-                onClick={() => setLanguage(language === 'en' ? 'zh' : 'en')}
-                className="text-foreground hover:text-primary transition-colors font-medium cursor-pointer"
-              >
-                {language === 'en' ? '中文' : 'EN'}
-              </button>
-              <Link href="/contact">
-                <Button className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-none">
-                  {t('nav.contact')}
-                </Button>
-              </Link>
+            <div className="hidden md:flex items-center justify-between flex-1 ml-8">
+              <div className="flex items-center gap-16">
+                <Link href="/">
+                  <span className="text-foreground hover:text-primary transition-colors font-medium cursor-pointer">{t('nav.home')}</span>
+                </Link>
+                <Link href="/services">
+                  <span className="text-foreground hover:text-primary transition-colors font-medium cursor-pointer">{t('nav.services')}</span>
+                </Link>
+                <Link href="/success-cases">
+                  <span className="text-foreground hover:text-primary transition-colors font-medium cursor-pointer">{t('nav.success_cases')}</span>
+                </Link>
+                <Link href="/blog">
+                  <span className="text-foreground hover:text-primary transition-colors font-medium cursor-pointer">{t('nav.blog')}</span>
+                </Link>
+                <Link href="/about">
+                  <span className="text-foreground hover:text-primary transition-colors font-medium cursor-pointer">{t('nav.about')}</span>
+                </Link>
+              </div>
+              <div className="flex items-center gap-6">
+                <button
+                  onClick={() => setLanguage(language === 'en' ? 'zh' : 'en')}
+                  className="text-foreground hover:text-primary transition-colors font-medium cursor-pointer"
+                >
+                  {language === 'en' ? '中文' : 'EN'}
+                </button>
+                <Link href="/contact">
+                  <Button className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-none">
+                    {t('nav.contact')}
+                  </Button>
+                </Link>
+              </div>
             </div>
           </div>
         </div>
