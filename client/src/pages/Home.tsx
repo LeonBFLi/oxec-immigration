@@ -55,9 +55,9 @@ export default function Home() {
               <img src="/oxec-logo.png" alt="OXEC Immigration Services Ltd." className="h-16 cursor-pointer" />
             </Link>
             
-            <div className="hidden md:flex items-center space-x-6">
+            <div className="hidden md:flex items-center space-x-6" style={{paddingLeft: '120px'}}>
               <Link href="/">
-                <span className="text-foreground hover:text-primary transition-colors font-medium cursor-pointer">{t('nav.home')}</span>
+                <span className="text-foreground hover:text-primary transition-colors font-medium cursor-pointer" style={{marginRight: '240px'}}>{t('nav.home')}</span>
               </Link>
               <Link href="/services">
                 <span className="text-foreground hover:text-primary transition-colors font-medium cursor-pointer">{t('nav.services')}</span>
