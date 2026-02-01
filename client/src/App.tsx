@@ -16,6 +16,7 @@ import FamilyClass from "./pages/FamilyClass";
 import PRCard from "./pages/PRCard";
 import Reconsideration from "./pages/Reconsideration";
 import Temporary from "./pages/Temporary";
+import Team from "./pages/Team";
 
 function Router() {
   return (
@@ -31,6 +32,7 @@ function Router() {
       <Route path="/prcard" component={PRCard} />
       <Route path="/reconsideration" component={Reconsideration} />
       <Route path="/temporary" component={Temporary} />
+      <Route path="/team" component={Team} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>
