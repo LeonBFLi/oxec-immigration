@@ -181,7 +181,7 @@ export default function Home() {
       </section>
 
       {/* Services Section */}
-      <section className="py-20 bg-background" style={{ paddingTop: "50px", paddingBottom: "50px" }}>
+      <section className="py-20 bg-background" style={{ paddingTop: "50px", paddingBottom: "50px", marginTop: '-119px' }}>
         <div className="container">
           <div className="text-center mb-16">
             <h2 className="text-3xl lg:text-5xl font-bold text-foreground mb-4">{t("services.title")}</h2>
@@ -263,7 +263,7 @@ export default function Home() {
           <div className="text-center mt-12 flex flex-wrap gap-4 justify-center">
             <Link href="/calculator">
               <Button asChild size="lg" variant="outline" className="border-2 border-accent text-accent hover:bg-accent/10">
-                <span style={{ backgroundColor: '#1f3d7f', borderRadius: "0px", color: "#ffffff", borderWidth: '0px' }}>
+                <span style={{ backgroundColor: '#00437f', borderRadius: "0px", color: "#ffffff", borderWidth: '0px' }}>
                   计算联邦快速通道得分
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </span>
@@ -271,7 +271,7 @@ export default function Home() {
             </Link>
             <Link href="/bccalculator">
               <Button asChild size="lg" variant="outline" className="border-2 border-accent text-accent hover:bg-accent/10">
-                <span style={{ backgroundColor: '#1f3d7f', borderRadius: "0px", color: "#ffffff", borderWidth: '0px' }}>
+                <span style={{ backgroundColor: '#00437f', borderRadius: "0px", color: "#ffffff", borderWidth: '0px' }}>
                   计算BC省提名得分
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </span>
