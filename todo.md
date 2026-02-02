@@ -68,3 +68,11 @@
 - [x] 实现详细介绍区域 - 4位成员的交替式图文布局
 - [x] 添加平滑滚动交互 - 点击卡片平滑滚动到详细介绍
 - [x] 应用视觉风格 - 纯白背景、充足留白、高端专业感
+
+
+## Navigation & Button Optimization (Current Sprint - Phase 4)
+- [x] 创建新页面框架 - /skillworker, /citizenship, /bccalculator
+- [x] 实现导航栏服务下拉菜单 - 7个服务项的悬停下拉菜单
+- [x] 重构移民服务板块按钮 - 统一样式，拆分算分工具为两个按钮
+- [x] 修改首屏CTA按钮 - 将"移民算分工具"改为"查看案例"，链接到/success-cases
+- [x] 更新App.tsx路由 - 添加3个新页面的路由配置

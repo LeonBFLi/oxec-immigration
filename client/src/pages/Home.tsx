@@ -1,6 +1,6 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Menu, X } from "lucide-react";
+import { ArrowRight, Menu, X, ChevronDown } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -9,7 +9,18 @@ export default function Home() {
   const { user, isAuthenticated } = useAuth();
   const { language, setLanguage, t } = useLanguage();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [servicesDropdownOpen, setServicesDropdownOpen] = useState(false);
   const [location] = useLocation();
+
+  const serviceItems = [
+    { label: "投资移民", href: "/businessclass" },
+    { label: "家庭团聚移民", href: "/familyclass" },
+    { label: "枫叶卡续签与加急", href: "/prcard" },
+    { label: "拒签与程序公证信", href: "/reconsideration" },
+    { label: "留学与访问", href: "/temporary" },
+    { label: "技术移民", href: "/skillworker" },
+    { label: "公民入籍", href: "/citizenship" },
+  ];
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -26,9 +37,31 @@ export default function Home() {
             <Link href="/">
               <span className="text-foreground hover:text-primary transition-colors font-medium cursor-pointer">{t("nav.home")}</span>
             </Link>
-            <Link href="/services">
-              <span className="text-foreground hover:text-primary transition-colors font-medium cursor-pointer">{t("nav.services")}</span>
-            </Link>
+            <div className="relative group">
+              <button
+                onMouseEnter={() => setServicesDropdownOpen(true)}
+                onMouseLeave={() => setServicesDropdownOpen(false)}
+                className="flex items-center text-foreground hover:text-primary transition-colors font-medium cursor-pointer"
+              >
+                {t("nav.services")}
+                <ChevronDown className="ml-1 h-4 w-4" />
+              </button>
+              {servicesDropdownOpen && (
+                <div
+                  onMouseEnter={() => setServicesDropdownOpen(true)}
+                  onMouseLeave={() => setServicesDropdownOpen(false)}
+                  className="absolute left-0 mt-0 w-56 bg-white border border-border rounded-md shadow-lg z-50"
+                >
+                  {serviceItems.map((item) => (
+                    <Link key={item.href} href={item.href}>
+                      <span className="block px-4 py-3 text-foreground hover:bg-primary/10 hover:text-primary transition-colors cursor-pointer first:rounded-t-md last:rounded-b-md">
+                        {item.label}
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
             <Link href="/success-cases">
               <span className="text-foreground hover:text-primary transition-colors font-medium cursor-pointer">{t("nav.success_cases")}</span>
             </Link>
@@ -137,9 +170,9 @@ export default function Home() {
                   </span>
                 </Button>
               </Link>
-              <Link href="/calculator">
+              <Link href="/success-cases">
                 <Button asChild size="lg" className="text-lg px-8 rounded-none" style={{ backgroundColor: "transparent", color: "#ffffff", border: "2px solid #ffffff" }}>
-                  <span>{t("hero.calculator")}</span>
+                  <span>查看案例</span>
                 </Button>
               </Link>
             </div>
@@ -227,11 +260,19 @@ export default function Home() {
             </Link>
           </div>
 
-          <div className="text-center mt-12">
+          <div className="text-center mt-12 flex flex-wrap gap-4 justify-center">
             <Link href="/calculator">
               <Button asChild size="lg" variant="outline" className="border-2 border-accent text-accent hover:bg-accent/10">
                 <span style={{ backgroundColor: '#1f3d7f', borderRadius: "0px", color: "#ffffff", borderWidth: '0px' }}>
-                  {t("services.calculator")}
+                  计算联邦快速通道得分
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </span>
+              </Button>
+            </Link>
+            <Link href="/bccalculator">
+              <Button asChild size="lg" variant="outline" className="border-2 border-accent text-accent hover:bg-accent/10">
+                <span style={{ backgroundColor: '#1f3d7f', borderRadius: "0px", color: "#ffffff", borderWidth: '0px' }}>
+                  计算BC省提名得分
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </span>
               </Button>

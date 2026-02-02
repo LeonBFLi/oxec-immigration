@@ -17,6 +17,9 @@ import PRCard from "./pages/PRCard";
 import Reconsideration from "./pages/Reconsideration";
 import Temporary from "./pages/Temporary";
 import Team from "./pages/Team";
+import SkillWorker from "./pages/SkillWorker";
+import Citizenship from "./pages/Citizenship";
+import BCCalculator from "./pages/BCCalculator";
 
 function Router() {
   return (
@@ -33,6 +36,9 @@ function Router() {
       <Route path="/reconsideration" component={Reconsideration} />
       <Route path="/temporary" component={Temporary} />
       <Route path="/team" component={Team} />
+      <Route path="/skillworker" component={SkillWorker} />
+      <Route path="/citizenship" component={Citizenship} />
+      <Route path="/bccalculator" component={BCCalculator} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>
