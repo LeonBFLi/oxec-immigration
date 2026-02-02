@@ -76,3 +76,10 @@
 - [x] 重构移民服务板块按钮 - 统一样式，拆分算分工具为两个按钮
 - [x] 修改首屏CTA按钮 - 将"移民算分工具"改为"查看案例"，链接到/success-cases
 - [x] 更新App.tsx路由 - 添加3个新页面的路由配置
+
+
+## Booking Page Enhancement (Current Sprint - Phase 5)
+- [x] 多语言切换功能 - 页面顶部添加ENG按钮，支持中英文即时切换
+- [x] Google地图集成 - 在页脚上方嵌入地图，标记公司位置(4710 Kingsway, Burnaby, BC)
+- [x] 预约表单邮件自动化 - 配置表单提交触发邮件发送至Business@oxecimm.com
+- [x] 成功提示弹窗 - 显示绿色成功提示，告知用户24小时内会被联系

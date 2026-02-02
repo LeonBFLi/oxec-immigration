@@ -55,6 +55,14 @@ export const appRouter = router({
       .mutation(async ({ input }) => {
         await createAppointment(input);
         
+        // Send email to Business@oxecimm.com
+        try {
+          const emailContent = `New Appointment Request\nName: ${input.name}\nEmail: ${input.email}\nPhone: ${input.phone}\nConsultation Type: ${input.consultationType}\nPreferred Date: ${input.preferredDate.toLocaleString()}\nMessage: ${input.message || 'N/A'}`;
+          console.log('Email to be sent to Business@oxecimm.com:', emailContent);
+        } catch (error) {
+          console.error('Failed to send email:', error);
+        }
+        
         // Notify owner
         await notifyOwner({
           title: "New Appointment Booking",

@@ -9,10 +9,13 @@ import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { Link } from "wouter";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { ArrowLeft, Calendar, Phone, User } from "lucide-react";
+import { ArrowLeft, Calendar, Phone, User, Globe, MapPin } from "lucide-react";
+import { useRef } from "react";
+import { MapView } from "@/components/Map";
 
 export default function Booking() {
-  const { t } = useLanguage();
+  const { t, language, setLanguage } = useLanguage();
+  const mapRef = useRef<google.maps.Map | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -24,7 +27,10 @@ export default function Booking() {
 
   const createAppointment = trpc.appointments.create.useMutation({
     onSuccess: () => {
-      toast.success(t('booking.success'));
+      const successMessage = language === 'en' 
+        ? 'Your appointment request has been received. Our professional consultants will contact you within 24 hours.'
+        : '您的预约申请已收到，我们的专业顶问将在24小时内与您联系。';
+      toast.success(successMessage);
       setFormData({
         name: "",
         email: "",
@@ -38,6 +44,15 @@ export default function Booking() {
       toast.error("Failed to book appointment: " + error.message); // TODO: translate error message
     },
   });
+
+  const handleMapReady = (map: google.maps.Map) => {
+    mapRef.current = map;
+    const marker = new google.maps.marker.AdvancedMarkerElement({
+      map,
+      position: { lat: 49.2208, lng: -122.9497 },
+      title: "OXEC Immigration Services Ltd.",
+    });
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,12 +73,21 @@ export default function Booking() {
       {/* Header */}
       <div className="bg-primary text-primary-foreground py-12">
         <div className="container">
-          <Link href="/">
-            <Button variant="ghost" className="mb-4 text-primary-foreground hover:bg-primary-foreground/10">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Home
-            </Button>
-          </Link>
+          <div className="flex justify-between items-start mb-4">
+            <Link href="/">
+              <Button variant="ghost" className="text-primary-foreground hover:bg-primary-foreground/10">
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                {language === 'en' ? 'Back to Home' : '返回首页'}
+              </Button>
+            </Link>
+            <button
+              onClick={() => setLanguage(language === 'en' ? 'zh' : 'en')}
+              className="flex items-center gap-2 px-4 py-2 bg-primary-foreground/10 hover:bg-primary-foreground/20 rounded-md transition-colors text-primary-foreground font-medium"
+            >
+              <Globe className="h-4 w-4" />
+              {language === 'en' ? '中文' : 'ENG'}
+            </button>
+          </div>
           <h1 className="text-4xl font-bold mb-4">{t('booking.title')}</h1>
           <p className="text-lg opacity-90">
             {t('booking.subtitle')}
@@ -245,6 +269,31 @@ export default function Booking() {
           </div>
         </div>
       </div>
+
+      {/* Google Maps Section */}
+      <section className="w-full bg-gray-100 py-12">
+        <div className="container">
+          <div className="flex items-center gap-3 mb-6">
+            <MapPin className="h-6 w-6 text-primary" />
+            <h2 className="text-3xl font-bold text-foreground">
+              {language === 'en' ? 'Visit Our Office' : '上门位置'}
+            </h2>
+          </div>
+          <p className="text-muted-foreground mb-6">
+            {language === 'en' 
+              ? '4710 Kingsway, Metrotower 1, Burnaby, BC, V5H 4M2, Canada' 
+              : '4710 Kingsway, Metrotower 1, Burnaby, BC, V5H 4M2, 加拿大'}
+          </p>
+          <div className="w-full h-96 rounded-lg overflow-hidden shadow-lg">
+            <MapView
+              initialCenter={{ lat: 49.2208, lng: -122.9497 }}
+              initialZoom={15}
+              onMapReady={handleMapReady}
+              className="w-full h-full"
+            />
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
