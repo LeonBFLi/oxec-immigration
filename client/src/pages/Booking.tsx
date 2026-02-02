@@ -82,7 +82,7 @@ export default function Booking() {
             </Link>
             <button
               onClick={() => setLanguage(language === 'en' ? 'zh' : 'en')}
-              className="flex items-center gap-2 px-4 py-2 bg-primary-foreground/10 hover:bg-primary-foreground/20 rounded-md transition-colors text-primary-foreground font-medium"
+              className="flex items-center gap-2 px-4 py-2 bg-primary-foreground/10 hover:bg-primary-foreground/20 rounded-md transition-colors text-primary-foreground font-medium" style={{borderRadius: '0px'}}
             >
               <Globe className="h-4 w-4" />
               {language === 'en' ? '中文' : 'ENG'}
@@ -100,11 +100,11 @@ export default function Booking() {
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Form */}
           <div className="lg:col-span-2">
-            <Card>
+            <Card style={{borderRadius: '0px'}}>
               <CardHeader>
                 <CardTitle>{t('booking.title')}</CardTitle>
                 <CardDescription>
-                  Fill in your information and we'll get back to you within 24 hours
+                  本表单所采集的所有个人信息将严格遵循《加拿大移民顾问监管委员会职业操守条例》进行管理。我们承诺对您的所有资料严格保密，且仅用于评估您的移民资格。提交此表单并不构成正式的法律代理关系；正式代理关系仅在双方签署《专业服务协议》(Retainer Agreement) 后成立。我们在此确认，在处理您的咨询申请前已进行内部核查，确保不存在任何利益冲突。若后续发现潜在冲突，我们将立即向您披露并采取合规措施。
                 </CardDescription>
               </CardHeader>
               <CardContent>

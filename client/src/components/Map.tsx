@@ -92,21 +92,45 @@ const FORGE_BASE_URL =
   "https://forge.butterfly-effect.dev";
 const MAPS_PROXY_URL = `${FORGE_BASE_URL}/v1/maps/proxy`;
 
+let mapScriptLoadPromise: Promise<void> | null = null;
+
 function loadMapScript() {
-  return new Promise(resolve => {
+  // Return existing promise if already loading
+  if (mapScriptLoadPromise) {
+    return mapScriptLoadPromise;
+  }
+
+  // Check if script already exists in DOM
+  const existingScript = document.querySelector(
+    `script[src*="${MAPS_PROXY_URL}"]`
+  );
+  if (existingScript) {
+    return Promise.resolve();
+  }
+
+  // Check if Google Maps is already loaded
+  if (window.google && window.google.maps) {
+    return Promise.resolve();
+  }
+
+  mapScriptLoadPromise = new Promise((resolve) => {
     const script = document.createElement("script");
     script.src = `${MAPS_PROXY_URL}/maps/api/js?key=${API_KEY}&v=weekly&libraries=marker,places,geocoding,geometry`;
     script.async = true;
     script.crossOrigin = "anonymous";
     script.onload = () => {
-      resolve(null);
-      script.remove(); // Clean up immediately
+      mapScriptLoadPromise = null; // Reset promise after loading
+      resolve();
     };
     script.onerror = () => {
       console.error("Failed to load Google Maps script");
+      mapScriptLoadPromise = null; // Reset promise on error
+      resolve(); // Still resolve to prevent hanging
     };
     document.head.appendChild(script);
   });
+
+  return mapScriptLoadPromise;
 }
 
 interface MapViewProps {
