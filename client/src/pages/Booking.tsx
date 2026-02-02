@@ -1,16 +1,16 @@
-import { useState } from "react";
+'use client';
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Checkbox } from "@/components/ui/checkbox";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { Link } from "wouter";
-import { ArrowLeft, Calendar, Phone, User, MapPin } from "lucide-react";
-import { useRef } from "react";
+import { ArrowLeft, Globe } from "lucide-react";
+import { useState, useRef } from "react";
 import { MapView } from "@/components/Map";
 
 const CONSULTATION_SUBJECTS = [
@@ -33,6 +33,8 @@ const WEEKDAYS = [
 
 export default function Booking() {
   const mapRef = useRef<google.maps.Map | null>(null);
+  const [language, setLanguage] = useState<'zh' | 'en'>('zh');
+  
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -114,7 +116,7 @@ export default function Booking() {
     setSelectedTimeSlots(newSelection);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!formData.name || !formData.email || !formData.phone || !formData.consultationSubject) {
@@ -122,179 +124,202 @@ export default function Booking() {
       return;
     }
 
-    if (selectedTimeSlots.length === 0) {
-      toast.error("请至少选择一个咨询时间段");
-      return;
-    }
+    const preferredTimeSlots = selectedTimeSlots.length > 0 
+      ? selectedTimeSlots.map(slot => {
+          const [day, time] = slot.split('-');
+          const dayName = WEEKDAYS.find(d => d.value === day)?.name || day;
+          return `${dayName}${time === 'morning' ? '上午' : '下午'}`;
+        }).join('、')
+      : '';
 
-    createAppointment.mutate({
+    await createAppointment.mutate({
       ...formData,
-      preferredTimeSlots: selectedTimeSlots.join(","),
-      preferredDate: new Date(),
+      hasExamScore: formData.hasExamScore,
+      hasRefusal: formData.hasRefusal,
+      hasCriminalRecord: formData.hasCriminalRecord,
+      preferredTimeSlots,
     });
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen flex flex-col bg-background">
       {/* Header */}
-      <div className="bg-primary text-primary-foreground py-12">
-        <div className="container">
-          <div className="flex justify-between items-start mb-4">
-            <Link href="/">
-              <Button variant="ghost" className="text-primary-foreground hover:bg-primary-foreground/10">
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                返回首页
-              </Button>
-            </Link>
-          </div>
-          <h1 className="text-4xl font-bold mb-4">预约咨询</h1>
-          <p className="text-lg opacity-90">
-            请准确填写以下表单并提交，我们将在最短时间内评估您的需求，然后电话联系您确认面谈时间
-          </p>
+      <div className="bg-white border-b border-border shadow-sm">
+        <div className="container flex items-center justify-between py-4">
+          <Link href="/">
+            <div className="flex items-center gap-2 cursor-pointer hover:opacity-80">
+              <ArrowLeft className="h-5 w-5" />
+              <span className="font-medium">返回首页</span>
+            </div>
+          </Link>
+          <button
+            onClick={() => setLanguage(language === 'en' ? 'zh' : 'en')}
+            className="flex items-center gap-2 px-4 py-2 bg-primary-foreground/10 hover:bg-primary-foreground/20 rounded-md transition-colors text-primary-foreground font-medium"
+          >
+            <Globe className="h-4 w-4" />
+            {language === 'en' ? '中文' : 'ENG'}
+          </button>
         </div>
       </div>
 
-      {/* Booking Form */}
-      <div className="container py-12">
+      {/* Main Content */}
+      <div className="flex-1 container py-12">
         <div className="grid lg:grid-cols-3 gap-8">
-          {/* Form */}
+          {/* Form Section */}
           <div className="lg:col-span-2">
-            <Card style={{ borderRadius: '0px' }}>
+            <Card>
               <CardHeader>
-                <CardTitle>预约申请表</CardTitle>
+                <CardTitle>预约咨询</CardTitle>
                 <CardDescription>
-                  本表单所采集的所有个人信息将严格遵循《加拿大移民顾问监管委员会职业操守条例》进行管理。我们承诺对您的所有资料严格保密，且仅用于评估您的移民资格。提交此表单并不构成正式的法律代理关系；正式代理关系仅在双方签署《专业服务协议》(Retainer Agreement) 后成立。我们在此确认，在处理您的咨询申请前已进行内部核查，确保不存在任何利益冲突。若后续发现潜在冲突，我们将立即向您披露并采取合规措施。
+                  请准确填写以下表单并提交，我们将在最短时间内评估您的需求，然后电话联系您确认面谈时间
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  {/* Basic Information */}
-                  <div className="space-y-2">
-                    <Label htmlFor="name">客户名称 *</Label>
-                    <Input
-                      id="name"
-                      placeholder="请输入您的全名"
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      required
-                    />
-                  </div>
+                {/* RCIC Compliance Declaration */}
+                <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-md">
+                  <p className="text-sm text-gray-700 leading-relaxed">
+                    <strong>重要声明：</strong>本表单所采集的所有个人信息将严格遵循《加拿大移民顾问监管委员会职业操守条例》进行管理。我们承诺对您的所有资料严格保密，且仅用于评估您的移民资格。提交此表单并不构成正式的法律代理关系；正式代理关系仅在双方签署《专业服务协议》(Retainer Agreement) 后成立。我们在此确认，在处理您的咨询申请前已进行内部核查，确保不存在任何利益冲突。若后续发现潜在冲突，我们将立即向您披露并采取合规措施。
+                  </p>
+                </div>
 
-                  <div className="grid md:grid-cols-2 gap-4">
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  {/* Basic Information Section */}
+                  <div className="space-y-4">
+                    <h3 className="text-base font-semibold">基本信息</h3>
+                    
                     <div className="space-y-2">
-                      <Label htmlFor="email">电子邮件 *</Label>
+                      <Label>客户名称 *</Label>
                       <Input
-                        id="email"
+                        required
+                        value={formData.name}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        placeholder="请输入您的全名"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>电子邮件 *</Label>
+                      <Input
+                        required
                         type="email"
-                        placeholder="your.email@example.com"
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        required
+                        placeholder="请输入您的邮箱地址"
                       />
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="phone">联系电话 *</Label>
+                      <Label>联系电话 *</Label>
                       <Input
-                        id="phone"
-                        type="tel"
-                        placeholder="+1 (555) 123-4567"
+                        required
                         value={formData.phone}
                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                        required
+                        placeholder="请输入您的联系电话"
                       />
                     </div>
                   </div>
 
-                  {/* Consultation Subject */}
-                  <div className="space-y-2">
-                    <Label>预约事项 *</Label>
-                    <RadioGroup value={formData.consultationSubject} onValueChange={(value) => setFormData({ ...formData, consultationSubject: value })}>
-                      <div className="grid grid-cols-2 gap-3">
-                        {CONSULTATION_SUBJECTS.map((subject) => (
-                          <div key={subject} className="flex items-center space-x-2">
-                            <RadioGroupItem value={subject} id={subject} />
-                            <Label htmlFor={subject} className="font-normal cursor-pointer">{subject}</Label>
+                  {/* Consultation Details Section */}
+                  <div className="space-y-4 border-t pt-6">
+                    <h3 className="text-base font-semibold">预约详情</h3>
+
+                    <div className="space-y-2">
+                      <Label>需求类型 *</Label>
+                      <RadioGroup value={formData.consultationSubject} onValueChange={(value) => setFormData({ ...formData, consultationSubject: value })}>
+                        <div className="flex flex-wrap gap-3">
+                          {CONSULTATION_SUBJECTS.map((subject) => (
+                            <div key={subject} className="flex items-center space-x-2">
+                              <RadioGroupItem value={subject} id={subject} />
+                              <Label htmlFor={subject} className="font-normal cursor-pointer">{subject}</Label>
+                            </div>
+                          ))}
+                        </div>
+                      </RadioGroup>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>咨询方式 *</Label>
+                      <RadioGroup value={formData.consultationType} onValueChange={(value) => setFormData({ ...formData, consultationType: value as "phone" | "in-person" })}>
+                        <div className="flex flex-wrap gap-4">
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="phone" id="phone" />
+                            <Label htmlFor="phone" className="font-normal cursor-pointer">电话咨询</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="in-person" id="in-person" />
+                            <Label htmlFor="in-person" className="font-normal cursor-pointer">线下咨询</Label>
+                          </div>
+                        </div>
+                      </RadioGroup>
+                    </div>
+
+                    {/* Time Slot Selector */}
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <Label>预计咨询时间 *</Label>
+                        <div className="flex gap-2">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={handleSelectAll}
+                            className="text-xs"
+                          >
+                            全选
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={handleInvertSelection}
+                            className="text-xs"
+                          >
+                            反选
+                          </Button>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2 bg-gray-50 p-4 rounded-md">
+                        {WEEKDAYS.map((day) => (
+                          <div key={day.value} className="flex flex-wrap gap-4">
+                            <span className="font-medium w-12">{day.name}</span>
+                            <div className="flex gap-4">
+                              <div className="flex items-center space-x-2">
+                                <input
+                                  type="checkbox"
+                                  id={`${day.value}-morning`}
+                                  checked={selectedTimeSlots.includes(`${day.value}-morning`)}
+                                  onChange={() => handleTimeSlotToggle(`${day.value}-morning`)}
+                                  className="w-4 h-4 cursor-pointer"
+                                />
+                                <label htmlFor={`${day.value}-morning`} className="cursor-pointer">上午</label>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <input
+                                  type="checkbox"
+                                  id={`${day.value}-afternoon`}
+                                  checked={selectedTimeSlots.includes(`${day.value}-afternoon`)}
+                                  onChange={() => handleTimeSlotToggle(`${day.value}-afternoon`)}
+                                  className="w-4 h-4 cursor-pointer"
+                                />
+                                <label htmlFor={`${day.value}-afternoon`} className="cursor-pointer">下午</label>
+                              </div>
+                            </div>
                           </div>
                         ))}
                       </div>
-                    </RadioGroup>
-                  </div>
-
-                  {/* Consultation Method */}
-                  <div className="space-y-2">
-                    <Label>咨询方式 *</Label>
-                    <RadioGroup value={formData.consultationType} onValueChange={(value) => setFormData({ ...formData, consultationType: value as "phone" | "in-person" })}>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="phone" id="phone" />
-                        <Label htmlFor="phone" className="font-normal cursor-pointer">电话咨询</Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="in-person" id="in-person" />
-                        <Label htmlFor="in-person" className="font-normal cursor-pointer">线下咨询</Label>
-                      </div>
-                    </RadioGroup>
-                  </div>
-
-                  {/* Time Slot Selection */}
-                  <div className="space-y-4 border-t pt-6">
-                    <div className="flex justify-between items-center">
-                      <Label className="text-base font-semibold">预计咨询时间 *</Label>
-                      <div className="space-x-2">
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={handleSelectAll}
-                        >
-                          全选
-                        </Button>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={handleInvertSelection}
-                        >
-                          反选
-                        </Button>
-                      </div>
-                    </div>
-
-                    <div className="space-y-3">
-                      {WEEKDAYS.map((day) => (
-                        <div key={day.value} className="flex items-center space-x-4 p-3 bg-gray-50 rounded">
-                          <span className="font-medium w-16">{day.name}</span>
-                          <div className="flex items-center space-x-4">
-                            <div className="flex items-center space-x-2">
-                              <Checkbox
-                                id={`${day.value}-morning`}
-                                checked={selectedTimeSlots.includes(`${day.value}-morning`)}
-                                onCheckedChange={() => handleTimeSlotToggle(`${day.value}-morning`)}
-                              />
-                              <Label htmlFor={`${day.value}-morning`} className="font-normal cursor-pointer">上午</Label>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <Checkbox
-                                id={`${day.value}-afternoon`}
-                                checked={selectedTimeSlots.includes(`${day.value}-afternoon`)}
-                                onCheckedChange={() => handleTimeSlotToggle(`${day.value}-afternoon`)}
-                              />
-                              <Label htmlFor={`${day.value}-afternoon`} className="font-normal cursor-pointer">下午</Label>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
                     </div>
                   </div>
 
-                  {/* Background Information */}
+                  {/* Background Information Section */}
                   <div className="space-y-4 border-t pt-6">
                     <h3 className="text-base font-semibold">背景信息采集</h3>
 
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label>性别</Label>
-                        <RadioGroup value={formData.gender} onValueChange={(value) => setFormData({ ...formData, gender: value })}>
+                    {/* Gender */}
+                    <div className="space-y-2">
+                      <Label>性别</Label>
+                      <RadioGroup value={formData.gender} onValueChange={(value) => setFormData({ ...formData, gender: value })}>
+                        <div className="flex flex-wrap gap-4">
                           <div className="flex items-center space-x-2">
                             <RadioGroupItem value="male" id="male" />
                             <Label htmlFor="male" className="font-normal cursor-pointer">男</Label>
@@ -303,12 +328,15 @@ export default function Booking() {
                             <RadioGroupItem value="female" id="female" />
                             <Label htmlFor="female" className="font-normal cursor-pointer">女</Label>
                           </div>
-                        </RadioGroup>
-                      </div>
+                        </div>
+                      </RadioGroup>
+                    </div>
 
-                      <div className="space-y-2">
-                        <Label>婚姻状况</Label>
-                        <RadioGroup value={formData.maritalStatus} onValueChange={(value) => setFormData({ ...formData, maritalStatus: value })}>
+                    {/* Marital Status */}
+                    <div className="space-y-2">
+                      <Label>婚姻状况</Label>
+                      <RadioGroup value={formData.maritalStatus} onValueChange={(value) => setFormData({ ...formData, maritalStatus: value })}>
+                        <div className="flex flex-wrap gap-4">
                           <div className="flex items-center space-x-2">
                             <RadioGroupItem value="single" id="single" />
                             <Label htmlFor="single" className="font-normal cursor-pointer">单身</Label>
@@ -325,14 +353,15 @@ export default function Booking() {
                             <RadioGroupItem value="widowed" id="widowed" />
                             <Label htmlFor="widowed" className="font-normal cursor-pointer">丧偶</Label>
                           </div>
-                        </RadioGroup>
-                      </div>
+                        </div>
+                      </RadioGroup>
                     </div>
 
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label>最高学历</Label>
-                        <RadioGroup value={formData.education} onValueChange={(value) => setFormData({ ...formData, education: value })}>
+                    {/* Education */}
+                    <div className="space-y-2">
+                      <Label>最高学历</Label>
+                      <RadioGroup value={formData.education} onValueChange={(value) => setFormData({ ...formData, education: value })}>
+                        <div className="flex flex-wrap gap-4">
                           <div className="flex items-center space-x-2">
                             <RadioGroupItem value="high-school" id="high-school" />
                             <Label htmlFor="high-school" className="font-normal cursor-pointer">高中及以下</Label>
@@ -353,12 +382,15 @@ export default function Booking() {
                             <RadioGroupItem value="phd" id="phd" />
                             <Label htmlFor="phd" className="font-normal cursor-pointer">博士</Label>
                           </div>
-                        </RadioGroup>
-                      </div>
+                        </div>
+                      </RadioGroup>
+                    </div>
 
-                      <div className="space-y-2">
-                        <Label>英语水平</Label>
-                        <RadioGroup value={formData.englishLevel} onValueChange={(value) => setFormData({ ...formData, englishLevel: value })}>
+                    {/* English Level */}
+                    <div className="space-y-2">
+                      <Label>英语水平</Label>
+                      <RadioGroup value={formData.englishLevel} onValueChange={(value) => setFormData({ ...formData, englishLevel: value })}>
+                        <div className="flex flex-wrap gap-4">
                           <div className="flex items-center space-x-2">
                             <RadioGroupItem value="beginner" id="beginner" />
                             <Label htmlFor="beginner" className="font-normal cursor-pointer">入门</Label>
@@ -375,14 +407,15 @@ export default function Booking() {
                             <RadioGroupItem value="fluent" id="fluent" />
                             <Label htmlFor="fluent" className="font-normal cursor-pointer">流利</Label>
                           </div>
-                        </RadioGroup>
-                      </div>
+                        </div>
+                      </RadioGroup>
                     </div>
 
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label>是否有考试成绩</Label>
-                        <RadioGroup value={formData.hasExamScore ? "yes" : "no"} onValueChange={(value) => setFormData({ ...formData, hasExamScore: value === "yes" })}>
+                    {/* Exam Score */}
+                    <div className="space-y-2">
+                      <Label>是否有考试成绩</Label>
+                      <RadioGroup value={formData.hasExamScore ? "yes" : "no"} onValueChange={(value) => setFormData({ ...formData, hasExamScore: value === "yes" })}>
+                        <div className="flex flex-wrap gap-4">
                           <div className="flex items-center space-x-2">
                             <RadioGroupItem value="yes" id="exam-yes" />
                             <Label htmlFor="exam-yes" className="font-normal cursor-pointer">是</Label>
@@ -391,12 +424,15 @@ export default function Booking() {
                             <RadioGroupItem value="no" id="exam-no" />
                             <Label htmlFor="exam-no" className="font-normal cursor-pointer">否</Label>
                           </div>
-                        </RadioGroup>
-                      </div>
+                        </div>
+                      </RadioGroup>
+                    </div>
 
-                      <div className="space-y-2">
-                        <Label>已工作年限</Label>
-                        <RadioGroup value={formData.workExperience} onValueChange={(value) => setFormData({ ...formData, workExperience: value })}>
+                    {/* Work Experience */}
+                    <div className="space-y-2">
+                      <Label>已工作年限</Label>
+                      <RadioGroup value={formData.workExperience} onValueChange={(value) => setFormData({ ...formData, workExperience: value })}>
+                        <div className="flex flex-wrap gap-4">
                           <div className="flex items-center space-x-2">
                             <RadioGroupItem value="less-1" id="less-1" />
                             <Label htmlFor="less-1" className="font-normal cursor-pointer">1年以下</Label>
@@ -417,20 +453,23 @@ export default function Booking() {
                             <RadioGroupItem value="10+" id="10+" />
                             <Label htmlFor="10+" className="font-normal cursor-pointer">10年以上</Label>
                           </div>
-                        </RadioGroup>
-                      </div>
+                        </div>
+                      </RadioGroup>
                     </div>
 
+                    {/* Refusal History */}
                     <div className="space-y-2">
                       <Label>是否有拒签史</Label>
                       <RadioGroup value={formData.hasRefusal ? "yes" : "no"} onValueChange={(value) => setFormData({ ...formData, hasRefusal: value === "yes" })}>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="yes" id="refusal-yes" />
-                          <Label htmlFor="refusal-yes" className="font-normal cursor-pointer">是</Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="no" id="refusal-no" />
-                          <Label htmlFor="refusal-no" className="font-normal cursor-pointer">否</Label>
+                        <div className="flex flex-wrap gap-4">
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="yes" id="refusal-yes" />
+                            <Label htmlFor="refusal-yes" className="font-normal cursor-pointer">是</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="no" id="refusal-no" />
+                            <Label htmlFor="refusal-no" className="font-normal cursor-pointer">否</Label>
+                          </div>
                         </div>
                       </RadioGroup>
                       {formData.hasRefusal && (
@@ -443,16 +482,19 @@ export default function Booking() {
                       )}
                     </div>
 
+                    {/* Criminal Record */}
                     <div className="space-y-2">
                       <Label>是否有犯罪记录</Label>
                       <RadioGroup value={formData.hasCriminalRecord ? "yes" : "no"} onValueChange={(value) => setFormData({ ...formData, hasCriminalRecord: value === "yes" })}>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="yes" id="criminal-yes" />
-                          <Label htmlFor="criminal-yes" className="font-normal cursor-pointer">是</Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="no" id="criminal-no" />
-                          <Label htmlFor="criminal-no" className="font-normal cursor-pointer">否</Label>
+                        <div className="flex flex-wrap gap-4">
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="yes" id="criminal-yes" />
+                            <Label htmlFor="criminal-yes" className="font-normal cursor-pointer">是</Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem value="no" id="criminal-no" />
+                            <Label htmlFor="criminal-no" className="font-normal cursor-pointer">否</Label>
+                          </div>
                         </div>
                       </RadioGroup>
                       {formData.hasCriminalRecord && (
@@ -467,21 +509,20 @@ export default function Booking() {
                   </div>
 
                   {/* Additional Message */}
-                  <div className="space-y-2">
-                    <Label htmlFor="message">需求说明</Label>
+                  <div className="space-y-2 border-t pt-6">
+                    <Label>需求说明</Label>
                     <Textarea
-                      id="message"
-                      placeholder="请告诉我们您的移民目标和任何具体问题..."
-                      rows={5}
+                      placeholder="请输入任何其他您想告诉我们的信息"
                       value={formData.message}
                       onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                      rows={4}
                     />
                   </div>
 
+                  {/* Submit Button */}
                   <Button
                     type="submit"
-                    size="lg"
-                    className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
+                    className="w-full"
                     disabled={createAppointment.isPending}
                   >
                     {createAppointment.isPending ? "提交中..." : "提交预约申请"}
@@ -491,14 +532,12 @@ export default function Booking() {
             </Card>
           </div>
 
-          {/* Info Sidebar */}
+          {/* Right Sidebar */}
           <div className="space-y-6">
+            {/* Service Process Card */}
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Calendar className="mr-2 h-5 w-5 text-primary" />
-                  服务流程
-                </CardTitle>
+                <CardTitle className="text-lg">服务流程</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
@@ -510,47 +549,43 @@ export default function Booking() {
                 <div>
                   <h4 className="font-semibold mb-2">签约及启动服务</h4>
                   <p className="text-sm text-muted-foreground">
-                    双方签署《专业服务协议》后，我们将正式启动您的移民申请流程，包括材料准备、文件整理和案件规划。
+                    双方签署《专业服务协议》后，我们将正式启动您的移民申请流程，包括文件准备、申请提交和后续跟进。
                   </p>
                 </div>
                 <div>
                   <h4 className="font-semibold mb-2">服务终止与结案</h4>
                   <p className="text-sm text-muted-foreground">
-                    在申请获批或根据您的指示终止服务后，我们将提供完整的结案报告和后续支持。
+                    申请获批或其他终止条件达成后，我们将完成所有必要的结案工作，并为您提供后续支持。
                   </p>
                 </div>
               </CardContent>
             </Card>
 
+            {/* Preparation Card */}
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Phone className="mr-2 h-5 w-5 text-accent" />
-                  联系我们
-                </CardTitle>
+                <CardTitle className="text-lg">初次咨询前的准备</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-muted-foreground mb-2">
-                  如有紧急咨询，您也可以直接与我们联系：
-                </p>
-                <p className="font-semibold">Business@oxecimm.com</p>
+                <ul className="space-y-2 text-sm">
+                  <li>• 准备您的护照或身份证件</li>
+                  <li>• 准备学历和工作经历证明</li>
+                  <li>• 准备语言考试成绩（如有）</li>
+                  <li>• 准备财务证明文件</li>
+                  <li>• 列出您的移民问题和关切</li>
+                </ul>
               </CardContent>
             </Card>
 
-            <Card className="bg-accent/5 border-accent/20">
+            {/* Contact Card */}
+            <Card>
               <CardHeader>
-                <CardTitle className="flex items-center text-accent">
-                  <User className="mr-2 h-5 w-5" />
-                  初次咨询前的准备
-                </CardTitle>
+                <CardTitle className="text-lg">联系我们</CardTitle>
               </CardHeader>
-              <CardContent>
-                <ul className="text-sm space-y-2 text-muted-foreground">
-                  <li>• 准备您的护照和身份证件</li>
-                  <li>• 列出您的教育和工作经历详情</li>
-                  <li>• 记下任何以前的签证申请或拒签情况</li>
-                  <li>• 写下您的具体移民问题</li>
-                </ul>
+              <CardContent className="space-y-2 text-sm">
+                <p><strong>电话：</strong> +1 (604) 555-0123</p>
+                <p><strong>邮箱：</strong> Business@oxecimm.com</p>
+                <p><strong>地址：</strong> 4710 Kingsway, Metrotower 1, Burnaby, BC V5H 4M2</p>
               </CardContent>
             </Card>
           </div>
@@ -558,27 +593,19 @@ export default function Booking() {
       </div>
 
       {/* Google Maps Section */}
-      <section className="w-full bg-gray-100 py-12">
+      <div className="bg-gray-100 py-12">
         <div className="container">
-          <div className="flex items-center gap-3 mb-6">
-            <MapPin className="h-6 w-6 text-primary" />
-            <h2 className="text-3xl font-bold text-foreground">
-              访问我们的办公室
-            </h2>
-          </div>
-          <p className="text-muted-foreground mb-6">
-            4710 Kingsway, Metrotower 1, Burnaby, BC, V5H 4M2, 加拿大
-          </p>
+          <h2 className="text-2xl font-bold mb-6">我们的位置</h2>
           <div className="w-full h-96 rounded-lg overflow-hidden shadow-lg">
-            <MapView
-              initialCenter={{ lat: 49.2208, lng: -122.9497 }}
-              initialZoom={15}
-              onMapReady={handleMapReady}
-              className="w-full h-full"
-            />
+            <MapView onMapReady={handleMapReady} />
+          </div>
+          <div className="mt-4 text-center">
+            <p className="text-gray-600">
+              4710 Kingsway, Metrotower 1, Burnaby, BC V5H 4M2, Canada
+            </p>
           </div>
         </div>
-      </section>
+      </div>
     </div>
   );
 }

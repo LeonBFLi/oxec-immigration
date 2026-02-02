@@ -292,7 +292,7 @@ function BlogManagement() {
                       variant="destructive"
                       onClick={() => {
                         if (confirm("Are you sure you want to delete this post?")) {
-                          deletePost.mutate(post.id);
+                          deletePost.mutate({ id: post.id });
                         }
                       }}
                     >
@@ -526,7 +526,7 @@ function CasesManagement() {
                       variant="destructive"
                       onClick={() => {
                         if (confirm("Are you sure?")) {
-                          deleteCase.mutate(caseItem.id);
+                          deleteCase.mutate({ id: caseItem.id });
                         }
                       }}
                     >
@@ -600,7 +600,7 @@ function AppointmentsManagement() {
                   </div>
                   <div>
                     <span className="font-semibold">Preferred Date:</span>{" "}
-                    {format(new Date(apt.preferredDate), "MMM d, yyyy 'at' h:mm a")}
+                    {apt.preferredDate ? format(new Date(apt.preferredDate), "MMM d, yyyy 'at' h:mm a") : 'N/A'}
                   </div>
                 </div>
                 {apt.message && (

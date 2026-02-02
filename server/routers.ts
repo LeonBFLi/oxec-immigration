@@ -19,6 +19,7 @@ import {
   getSuccessCases,
 } from "./db";
 import { notifyOwner } from "./_core/notification";
+import { sendAppointmentEmail } from "./_core/emailService";
 
 // Admin-only procedure
 const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
@@ -68,12 +69,7 @@ export const appRouter = router({
         await createAppointment(input);
         
         // Send email to Business@oxecimm.com
-        try {
-          const emailContent = `[新预约申请] ${input.name} - ${input.consultationSubject}\n\n客户信息:\n姓名: ${input.name}\n邮箱: ${input.email}\n电话: ${input.phone}\n\n咨询信息:\n预约事项: ${input.consultationSubject}\n咨询方式: ${input.consultationType === 'phone' ? '电话咨询' : '线下咨询'}\n预约时间段: ${input.preferredTimeSlots || '未指定'}\n\n背景信息:\n性别: ${input.gender || '未指定'}\n婚姻状况: ${input.maritalStatus || '未指定'}\n最高学历: ${input.education || '未指定'}\n英语水平: ${input.englishLevel || '未指定'}\n是否有考试成绩: ${input.hasExamScore ? '是' : '否'}\n工作年限: ${input.workExperience || '未指定'}\n拒签史: ${input.hasRefusal ? '是 - ' + (input.refusalReason || '') : '否'}\n犯罪记录: ${input.hasCriminalRecord ? '是 - ' + (input.criminalRecordDetails || '') : '否'}\n\n额外说明:\n${input.message || '无'}`;
-          console.log('Email to be sent to Business@oxecimm.com:', emailContent);
-        } catch (error) {
-          console.error('Failed to send email:', error);
-        }
+        await sendAppointmentEmail(input);
         
         // Notify owner
         await notifyOwner({
@@ -202,9 +198,15 @@ export const appRouter = router({
         return await deleteBlogPost(input.id);
       }),
 
-    list: publicProcedure.query(async () => {
-      return await getBlogPosts();
-    }),
+    list: publicProcedure
+      .input(z.object({ publishedOnly: z.boolean().optional() }).optional())
+      .query(async ({ input }) => {
+        const posts = await getBlogPosts();
+        if (input?.publishedOnly) {
+          return posts.filter(p => p.published);
+        }
+        return posts;
+      }),
 
     getBySlug: publicProcedure
       .input(z.object({ slug: z.string() }))
@@ -261,9 +263,15 @@ export const appRouter = router({
         return await deleteSuccessCase(input.id);
       }),
 
-    list: publicProcedure.query(async () => {
-      return await getSuccessCases();
-    }),
+    list: publicProcedure
+      .input(z.object({ publishedOnly: z.boolean().optional() }).optional())
+      .query(async ({ input }) => {
+        const cases = await getSuccessCases();
+        if (input?.publishedOnly) {
+          return cases.filter(c => c.published);
+        }
+        return cases;
+      }),
   }),
 });
 
