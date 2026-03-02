@@ -97,6 +97,7 @@ const FORGE_BASE_URL =
   import.meta.env.VITE_FRONTEND_FORGE_API_URL ||
   "https://forge.butterfly-effect.dev";
 const MAPS_PROXY_URL = `${FORGE_BASE_URL}/v1/maps/proxy`;
+const GOOGLE_MAP_ID = import.meta.env.VITE_GOOGLE_MAP_ID || undefined;
 
 let mapScriptLoadPromise: Promise<void> | null = null;
 
@@ -170,6 +171,12 @@ export function MapView({
 
   const init = usePersistFn(async () => {
     await loadMapScript();
+
+    if (!window.google?.maps) {
+      console.error("Google Maps API not available after script load");
+      return;
+    }
+
     if (!mapContainer.current) {
       console.error("Map container not found");
       return;
@@ -181,7 +188,7 @@ export function MapView({
       fullscreenControl: true,
       zoomControl: true,
       streetViewControl: true,
-      mapId: "DEMO_MAP_ID",
+      ...(GOOGLE_MAP_ID ? { mapId: GOOGLE_MAP_ID } : {}),
     });
     if (onMapReady) {
       onMapReady(map.current);
