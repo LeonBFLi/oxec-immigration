@@ -108,7 +108,7 @@ export function ArticleSidebar({
                 <h4 className="font-medium text-sm mb-2 line-clamp-2 hover:text-primary cursor-pointer">
                   <button
                     onClick={() => {
-                      const url = postType === "blog" ? `/blog/${post.slug}` : `/success-cases/${post.slug}`;
+                      const url = postType === "blog" ? `/blog/${post.slug || post.id}` : `/success-cases/${post.slug || post.id}`;
                       setLocation(url);
                     }}
                     className="text-left hover:text-primary transition-colors"
@@ -131,7 +131,7 @@ export function ArticleSidebar({
                 </p>
                 <button
                   onClick={() => {
-                    const url = postType === "blog" ? `/blog/${post.slug}` : `/success-cases/${post.slug}`;
+                    const url = postType === "blog" ? `/blog/${post.slug || post.id}` : `/success-cases/${post.slug || post.id}`;
                     setLocation(url);
                   }}
                   className="text-xs text-primary hover:text-primary/80 transition-colors"

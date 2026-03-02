@@ -1,5 +1,7 @@
 import { eq, desc, like, and, ne } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
+import fs from "node:fs";
+import path from "node:path";
 import { 
   InsertUser, 
   users, 
@@ -16,6 +18,54 @@ import {
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
+
+type FallbackPostRow = {
+  id: string;
+  title: string;
+  slug?: string;
+  type?: string;
+  published?: string;
+  createdAt?: string;
+};
+
+function loadFallbackPostsFromManus(): Post[] {
+  try {
+    const snapshotPath = path.resolve(process.cwd(), ".manus/db/db-query-1771032070184.json");
+    if (!fs.existsSync(snapshotPath)) return [];
+
+    const raw = JSON.parse(fs.readFileSync(snapshotPath, "utf-8"));
+    const rows = Array.isArray(raw?.rows) ? (raw.rows as FallbackPostRow[]) : [];
+
+    return rows.map((row) => {
+      const createdAt = row.createdAt ? new Date(row.createdAt) : new Date();
+      const published = row.published === "1";
+      return {
+        id: Number(row.id),
+        title: row.title,
+        subtitle: null,
+        slug: row.slug || row.id,
+        content: `# ${row.title}\n\n该文章已从本地备份恢复，完整内容稍后同步。`,
+        excerpt: "该文章已从本地备份恢复。",
+        type: (row.type as "blog" | "success-case") || "blog",
+        category: null,
+        tags: null,
+        coverImage: null,
+        published,
+        publishedAt: published ? createdAt : null,
+        authorId: 1,
+        createdAt,
+        updatedAt: createdAt,
+        contentCategory: null,
+        blogCategory: null,
+        successCaseCategory: null,
+        author: "OXEC Immigration",
+      } as Post;
+    });
+  } catch (error) {
+    console.warn("[Fallback Posts] Failed to load .manus snapshot:", error);
+    return [];
+  }
+}
 
 export async function getDb() {
   if (!_db && process.env.DATABASE_URL) {
@@ -286,7 +336,10 @@ export async function deletePost(id: number) {
 
 export async function getPostById(id: number) {
   const db = await getDb();
-  if (!db) throw new Error("Database not available");
+  if (!db) {
+    const fallback = loadFallbackPostsFromManus();
+    return fallback.find((post) => post.id === id) ?? null;
+  }
   
   const result = await db.select().from(posts).where(eq(posts.id, id)).limit(1);
   return result.length > 0 ? result[0] : null;
@@ -294,7 +347,10 @@ export async function getPostById(id: number) {
 
 export async function getPostBySlug(slug: string) {
   const db = await getDb();
-  if (!db) throw new Error("Database not available");
+  if (!db) {
+    const fallback = loadFallbackPostsFromManus();
+    return fallback.find((post) => post.slug === slug) ?? null;
+  }
   
   const result = await db.select().from(posts).where(eq(posts.slug, slug)).limit(1);
   return result.length > 0 ? result[0] : null;
@@ -302,7 +358,15 @@ export async function getPostBySlug(slug: string) {
 
 export async function getPosts(filters?: { type?: string; category?: string; blogCategory?: string; successCaseCategory?: string; contentCategory?: string; publishedOnly?: boolean; limit?: number; excludeId?: number }) {
   const db = await getDb();
-  if (!db) throw new Error("Database not available");
+  if (!db) {
+    let fallback = loadFallbackPostsFromManus();
+    if (filters?.publishedOnly) fallback = fallback.filter((post) => post.published);
+    if (filters?.type) fallback = fallback.filter((post) => post.type === filters.type);
+    if (filters?.excludeId) fallback = fallback.filter((post) => post.id !== filters.excludeId);
+    fallback = fallback.sort((a, b) => +new Date(b.createdAt) - +new Date(a.createdAt));
+    if (filters?.limit) return fallback.slice(0, filters.limit);
+    return fallback;
+  }
   
   const conditions = [];
   

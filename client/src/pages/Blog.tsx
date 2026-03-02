@@ -254,7 +254,7 @@ export default function Blog() {
             {/* Main Content - 2 columns */}
             <div className="lg:col-span-2 space-y-8">
               {filteredPosts.map((post: any) => (
-                <Link key={post.id} href={`/blog/${post.slug}`}>
+                <Link key={post.id} href={`/blog/${post.slug || post.id}`}>
                   <div className="bg-white cursor-pointer pb-8">
                     <div className="grid md:grid-cols-2 gap-6">
                       {/* Cover Image */}
@@ -314,7 +314,7 @@ export default function Blog() {
                 </h4>
                 <div className="space-y-4">
                   {filteredPosts.slice(0, 3).map((post: any) => (
-                    <Link key={post.id} href={`/blog/${post.slug}`}>
+                    <Link key={post.id} href={`/blog/${post.slug || post.id}`}>
                       <div className="pb-4 border-b last:border-b-0 hover:text-primary transition-colors cursor-pointer">
                         <p className="font-semibold text-sm">{post.title}</p>
                         <p className="text-xs text-muted-foreground mt-1">

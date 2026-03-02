@@ -41,7 +41,7 @@ export function LatestArticlesSection() {
         <div className="flex flex-wrap justify-center gap-8 mb-8">
           {/* Latest Blog Article */}
           {latestBlog && !blogLoading ? (
-            <Link href={`/blog/${latestBlog.id}`}>
+            <Link href={`/blog/${latestBlog.slug || latestBlog.id}`}>
               <div className="group relative overflow-hidden bg-white border border-border cursor-pointer transition-all duration-300 hover:shadow-lg" style={{ maxWidth: '640px', width: '100%' }}>
                 <div className="relative overflow-hidden" style={{ aspectRatio: '16 / 9' }}>
                   <img 
@@ -74,7 +74,7 @@ export function LatestArticlesSection() {
 
           {/* Latest Success Case */}
           {latestSuccessCase && !successLoading ? (
-            <Link href={`/success-cases/${latestSuccessCase.id}`}>
+            <Link href={`/success-cases/${latestSuccessCase.slug || latestSuccessCase.id}`}>
               <div className="group relative overflow-hidden bg-white border border-border cursor-pointer transition-all duration-300 hover:shadow-lg" style={{ maxWidth: '640px', width: '100%' }}>
                 <div className="relative overflow-hidden" style={{ aspectRatio: '16 / 9' }}>
                   <img 

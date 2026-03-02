@@ -86,11 +86,18 @@ declare global {
   }
 }
 
-const API_KEY = import.meta.env.VITE_FRONTEND_FORGE_API_KEY;
+const GOOGLE_MAPS_API_KEY =
+  import.meta.env.VITE_GOOGLE_MAPS_API_KEY ||
+  import.meta.env.VITE_GOOGLE_KEY ||
+  import.meta.env.VITE_GOOGLE_PLACES_API_KEY ||
+  "";
+
+const FORGE_API_KEY = import.meta.env.VITE_FRONTEND_FORGE_API_KEY || "";
 const FORGE_BASE_URL =
   import.meta.env.VITE_FRONTEND_FORGE_API_URL ||
   "https://forge.butterfly-effect.dev";
 const MAPS_PROXY_URL = `${FORGE_BASE_URL}/v1/maps/proxy`;
+const GOOGLE_MAP_ID = import.meta.env.VITE_GOOGLE_MAP_ID || undefined;
 
 let mapScriptLoadPromise: Promise<void> | null = null;
 
@@ -115,7 +122,20 @@ function loadMapScript() {
 
   mapScriptLoadPromise = new Promise((resolve) => {
     const script = document.createElement("script");
-    script.src = `${MAPS_PROXY_URL}/maps/api/js?key=${API_KEY}&v=weekly&libraries=marker,places,geocoding,geometry`;
+    const libraries = "marker,places,geocoding,geometry";
+    const shouldUseForgeProxy = Boolean(FORGE_API_KEY);
+    const apiKey = shouldUseForgeProxy ? FORGE_API_KEY : GOOGLE_MAPS_API_KEY;
+
+    if (!apiKey) {
+      console.error("Failed to load Google Maps script: missing API key");
+      mapScriptLoadPromise = null;
+      resolve();
+      return;
+    }
+
+    script.src = shouldUseForgeProxy
+      ? `${MAPS_PROXY_URL}/maps/api/js?key=${apiKey}&v=weekly&libraries=${libraries}`
+      : `https://maps.googleapis.com/maps/api/js?key=${apiKey}&v=weekly&libraries=${libraries}`;
     script.async = true;
     script.crossOrigin = "anonymous";
     script.onload = () => {
@@ -151,6 +171,12 @@ export function MapView({
 
   const init = usePersistFn(async () => {
     await loadMapScript();
+
+    if (!window.google?.maps) {
+      console.error("Google Maps API not available after script load");
+      return;
+    }
+
     if (!mapContainer.current) {
       console.error("Map container not found");
       return;
@@ -162,7 +188,7 @@ export function MapView({
       fullscreenControl: true,
       zoomControl: true,
       streetViewControl: true,
-      mapId: "DEMO_MAP_ID",
+      ...(GOOGLE_MAP_ID ? { mapId: GOOGLE_MAP_ID } : {}),
     });
     if (onMapReady) {
       onMapReady(map.current);
