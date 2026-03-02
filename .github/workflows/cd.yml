@@ -46,4 +46,5 @@ jobs:
               -p 80:80 \
               -e NODE_ENV=production \
               -e PORT=80 \
+              -e GOOGLE_KEY='${{ secrets.GOOGLE_KEY }}' \
               ${{ secrets.DOCKERHUB_USERNAME }}/oxec-immigration:latest
