@@ -1,15 +1,21 @@
 'use client';
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, Menu, X } from "lucide-react";
 import { Link } from "wouter";
 import { Footer } from "@/components/Footer";
+import { updateMetaTags, pageMetaTags } from "@/lib/meta-tags";
 
 export default function PRCard() {
   const [isEnglish, setIsEnglish] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [servicesDropdownOpen, setServicesDropdownOpen] = useState(false);
+
+  // 更新页面Meta标签
+  useEffect(() => {
+    updateMetaTags(pageMetaTags.prcard);
+  }, []);
 
   const serviceItems = [
     { label: "投资移民", href: "/businessclass" },

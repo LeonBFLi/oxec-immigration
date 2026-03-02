@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, ChevronDown } from "lucide-react";
@@ -8,11 +8,17 @@ import { trpc } from "@/lib/trpc";
 import { Footer } from "@/components/Footer";
 import { Link } from "wouter";
 import { OptimizedImage } from "@/components/OptimizedImage";
+import { updateMetaTags, pageMetaTags } from "@/lib/meta-tags";
 
 export default function BusinessClass() {
   const [isEnglish, setIsEnglish] = useState(false);
   const [, navigate] = useLocation();
   const [servicesDropdownOpen, setServicesDropdownOpen] = useState(false);
+
+  // 更新页面Meta标签
+  useEffect(() => {
+    updateMetaTags(pageMetaTags.businessclass);
+  }, []);
 
   const serviceItems = [
     { label: "投资移民", href: "/businessclass" },

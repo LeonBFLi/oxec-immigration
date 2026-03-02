@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -8,6 +8,7 @@ import { Link } from "wouter";
 import { ArrowLeft, Calculator } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Footer } from "@/components/Footer";
+import { updateMetaTags, pageMetaTags } from "@/lib/meta-tags";
 
 // CLB conversion helper for all language tests
 const convertToCLB = (
@@ -383,6 +384,11 @@ const convertToCLB = (
 };
 
 export default function CLBTranslator() {
+  // 更新页面Meta标签
+  useEffect(() => {
+    updateMetaTags(pageMetaTags.clbTranslator);
+  }, []);
+
   const [testType, setTestType] = useState<"ielts" | "celpip" | "pte" | "tef" | "tcf">("ielts");
   const [scores, setScores] = useState({
     listening: 0,

@@ -1,13 +1,19 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { ChevronDown } from 'lucide-react';
 import { Footer } from '@/components/Footer';
+import { updateMetaTags, pageMetaTags } from '@/lib/meta-tags';
 
 export default function SkillWorker() {
   const [isEnglish, setIsEnglish] = useState(false);
   const [servicesDropdownOpen, setServicesDropdownOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('overview');
+
+  // 更新页面Meta标签
+  useEffect(() => {
+    updateMetaTags(pageMetaTags.skillworker);
+  }, []);
 
   const serviceItems = [
     { label: "投资移民", href: "/businessclass" },

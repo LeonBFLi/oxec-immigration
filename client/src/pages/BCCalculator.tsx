@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -10,8 +10,14 @@ import { toast } from "sonner";
 import { Link } from "wouter";
 import { ArrowLeft, Calculator as CalcIcon, TrendingUp, Award } from "lucide-react";
 import { Footer } from "@/components/Footer";
+import { updateMetaTags, pageMetaTags } from "@/lib/meta-tags";
 
 export default function BCCalculator() {
+  // 更新页面Meta标签
+  useEffect(() => {
+    updateMetaTags(pageMetaTags.bcCalculator);
+  }, []);
+
   const [formData, setFormData] = useState({
     workExperience: "" as "5plus" | "4to5" | "3to4" | "2to3" | "1to2" | "below1" | "none" | "",
     canadianExperience: false,

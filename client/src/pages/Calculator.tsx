@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
@@ -11,8 +11,14 @@ import { toast } from "sonner";
 import { Link } from "wouter";
 import { ArrowLeft, Calculator as CalcIcon } from "lucide-react";
 import { Footer } from "@/components/Footer";
+import { updateMetaTags, pageMetaTags } from "@/lib/meta-tags";
 
 export default function Calculator() {
+  // 更新页面Meta标签
+  useEffect(() => {
+    updateMetaTags(pageMetaTags.calculator);
+  }, []);
+
   const [familyStatus, setFamilyStatus] = useState<"single" | "married-no-spouse" | "married-with-spouse">("single");
   const [validationError, setValidationError] = useState<string | null>(null);
   const [showErrorDialog, setShowErrorDialog] = useState(false);

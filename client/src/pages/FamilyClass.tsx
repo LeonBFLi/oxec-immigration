@@ -1,17 +1,23 @@
 'use client';
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, ChevronDown, Menu, X } from "lucide-react";
 import { Link } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { Footer } from "@/components/Footer";
+import { updateMetaTags, pageMetaTags } from "@/lib/meta-tags";
 
 export default function FamilyClass() {
   const [isEnglish, setIsEnglish] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [servicesDropdownOpen, setServicesDropdownOpen] = useState(false);
+
+  // 更新页面Meta标签
+  useEffect(() => {
+    updateMetaTags(pageMetaTags.familyclass);
+  }, []);
 
   const serviceItems = [
     { label: "投资移民", href: "/businessclass" },

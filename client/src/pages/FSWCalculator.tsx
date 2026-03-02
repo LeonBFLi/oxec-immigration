@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -9,8 +9,14 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Link } from "wouter";
 import { ArrowLeft, Calculator as CalcIcon } from "lucide-react";
 import { Footer } from "@/components/Footer";
+import { updateMetaTags, pageMetaTags } from "@/lib/meta-tags";
 
 export default function FSWCalculator() {
+  // 更新页面Meta标签
+  useEffect(() => {
+    updateMetaTags(pageMetaTags.fswCalculator);
+  }, []);
+
   const [formData, setFormData] = useState({
     // 第一语言
     primaryLanguage: "english" as "english" | "french",
