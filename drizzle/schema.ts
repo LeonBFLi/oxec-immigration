@@ -157,3 +157,74 @@ export const imageLibrary = mysqlTable("imageLibrary", {
 
 export type ImageLibrary = typeof imageLibrary.$inferSelect;
 export type InsertImageLibrary = typeof imageLibrary.$inferInsert;
+
+/**
+ * Admin users table for /admin panel authentication
+ */
+export const admins = mysqlTable("admins", {
+  id: int("id").autoincrement().primaryKey(),
+  username: varchar("username", { length: 100 }).notNull().unique(),
+  email: varchar("email", { length: 320 }).notNull().unique(),
+  passwordHash: varchar("passwordHash", { length: 255 }).notNull(),
+  role: mysqlEnum("role", ["super_admin", "admin", "editor"]).default("editor").notNull(),
+  mfaEnabled: boolean("mfaEnabled").default(false).notNull(),
+  mfaMethod: mysqlEnum("mfaMethod", ["google_authenticator", "sms", "none"]).default("none").notNull(),
+  phoneNumber: varchar("phoneNumber", { length: 20 }),
+  lastLogin: timestamp("lastLogin"),
+  isActive: boolean("isActive").default(true).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Admin = typeof admins.$inferSelect;
+export type InsertAdmin = typeof admins.$inferInsert;
+
+/**
+ * MFA configurations table for storing TOTP secrets and backup codes
+ */
+export const mfaConfigs = mysqlTable("mfaConfigs", {
+  id: int("id").autoincrement().primaryKey(),
+  adminId: int("adminId").notNull().unique(),
+  totpSecret: varchar("totpSecret", { length: 255 }),
+  backupCodes: text("backupCodes"), // JSON array of backup codes
+  smsPhoneNumber: varchar("smsPhoneNumber", { length: 20 }),
+  verifiedAt: timestamp("verifiedAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type MFAConfig = typeof mfaConfigs.$inferSelect;
+export type InsertMFAConfig = typeof mfaConfigs.$inferInsert;
+
+/**
+ * Admin sessions table for session management
+ */
+export const adminSessions = mysqlTable("adminSessions", {
+  id: int("id").autoincrement().primaryKey(),
+  adminId: int("adminId").notNull(),
+  token: varchar("token", { length: 500 }).notNull().unique(),
+  expiresAt: timestamp("expiresAt").notNull(),
+  ipAddress: varchar("ipAddress", { length: 45 }),
+  userAgent: text("userAgent"),
+  isActive: boolean("isActive").default(true).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type AdminSession = typeof adminSessions.$inferSelect;
+export type InsertAdminSession = typeof adminSessions.$inferInsert;
+
+/**
+ * MFA verification attempts table for rate limiting
+ */
+export const mfaAttempts = mysqlTable("mfaAttempts", {
+  id: int("id").autoincrement().primaryKey(),
+  adminId: int("adminId").notNull(),
+  attemptType: mysqlEnum("attemptType", ["totp", "sms"]).notNull(),
+  success: boolean("success").notNull(),
+  ipAddress: varchar("ipAddress", { length: 45 }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type MFAAttempt = typeof mfaAttempts.$inferSelect;
+export type InsertMFAAttempt = typeof mfaAttempts.$inferInsert;

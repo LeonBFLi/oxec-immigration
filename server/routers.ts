@@ -32,6 +32,7 @@ import { calculateCRS as calculateCRSLogic } from "./crsCalculator";
 import { getRealGoogleReviews } from "./googlePlacesAPI";
 import { storagePut } from "./storage";
 import { imagesRouter } from "./routers/images";
+import { adminAuthRouter } from "./routers/admin-auth";
 
 
 
@@ -46,6 +47,7 @@ const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
 export const appRouter = router({
   system: systemRouter,
   images: imagesRouter,
+  adminAuth: adminAuthRouter,
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
     logout: publicProcedure.mutation(({ ctx }) => {
